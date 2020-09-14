@@ -18,12 +18,6 @@ def get_http():
     http = credentials.authorize(httplib2.Http(memcache))
     return http
 
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
 @app.route('/vm/get')
 def get_vm():
     http = get_http()
@@ -36,7 +30,6 @@ def get_vm():
     logging.debug(resp)
     logging.debug(result)
     return result, 200, {'Content-Type': 'application/json'}
-
 
 @app.route('/vm/start')
 def start_vm():
@@ -51,6 +44,18 @@ def start_vm():
     logging.debug(result)
     return result, 200, {'Content-Type': 'application/json'}
 
+@app.route('/vm/stop')
+def stop_vm():
+    http = get_http()
+    uri = 'https://www.googleapis.com/compute/v1/projects/{project}/zones/{zone}/instances/{instance}/stop'
+    uri = uri.format(project=PROJECT, zone=INSTANCE_ZONE, instance=INSTANCE_NAME)
+    resp, result = http.request(
+        uri=uri,
+        method='POST'
+        )
+    logging.debug(resp)
+    logging.debug(result)
+    return result, 200, {'Content-Type': 'application/json'}
 
 if __name__ == '__main__':
     app.run()
